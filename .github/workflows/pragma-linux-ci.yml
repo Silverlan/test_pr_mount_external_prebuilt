@@ -1,0 +1,61 @@
+name: Release prebuilt binaries
+on:
+  repository_dispatch:
+    types: [release-prebuilt-binaries]
+
+concurrency:
+  group: release-prebuilt-binaries-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Release prebuilt binaries
+    runs-on: ${{ matrix.config.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+          - os: ubuntu-22.04
+            name: "Ubuntu GCC-11"
+            artifact: "ubuntu_gcc.7z"
+            build_type: "RelWithDebInfo"
+            cc: "clang-14"
+            cxx: "clang++-14"
+            archiver: "7z a"
+            generators: "Unix Makefiles"
+            build_dir: 'build'
+    steps:
+      - uses: robinraju/release-downloader@v1.6
+        with: 
+          repository: "Silverlan/pr_source"
+          tag: "latest"
+          fileName: "binaries_linux64.tar.gz"
+          out-file-path: "."
+          token: "${{ secrets.PR_SOURCE_RELEASE_TOKEN }}"
+
+      - uses: robinraju/release-downloader@v1.6
+        with: 
+          repository: "Silverlan/pr_source"
+          tag: "latest"
+          fileName: "binaries_windows64.zip"
+          out-file-path: "."
+          token: "${{ secrets.PR_SOURCE_RELEASE_TOKEN }}"
+          
+      - name: Update Nightly Tag
+        uses: rickstaa/action-create-tag@v1.3.9
+        continue-on-error: true
+        with:
+          tag: "latest"
+          force_push_tag: true
+
+      - name: Release
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: "binaries_linux64.tar.gz,binaries_windows64.zip"
+          body: "Automatically generated binaries."
+          commit: ${{ github.ref_name }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          tag: latest
+          replacesArtifacts: true
+          allowUpdates: true
+          
