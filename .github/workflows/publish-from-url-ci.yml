@@ -1,0 +1,47 @@
+name: Release prebuilt binaries from URL
+on:
+  workflow_dispatch:
+    inputs:
+
+jobs:
+  build:
+    name: Release prebuilt binaries
+    runs-on: ${{ matrix.config.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+          - os: ubuntu-22.04
+            name: "Ubuntu GCC-11"
+            artifact: "ubuntu_gcc.7z"
+            build_type: "RelWithDebInfo"
+            cc: "clang-14"
+            cxx: "clang++-14"
+            archiver: "7z a"
+            generators: "Unix Makefiles"
+            build_dir: 'build'
+    steps:
+      - name: Get Binaries
+        shell: bash
+        run: |
+          wget https://pragma-engine.com/share/binaries_windows64.zip
+          wget https://pragma-engine.com/share/binaries_linux64.tar.gz
+
+      - name: Update Nightly Tag
+        uses: rickstaa/action-create-tag@v1.3.9
+        continue-on-error: true
+        with:
+          tag: "latest"
+          force_push_tag: true
+
+      - name: Release
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: "binaries_linux64.tar.gz,binaries_windows64.zip"
+          body: "Automatically generated binaries."
+          commit: ${{ github.ref_name }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          tag: latest
+          replacesArtifacts: true
+          allowUpdates: true
+          
