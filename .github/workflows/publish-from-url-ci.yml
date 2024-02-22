@@ -24,8 +24,8 @@ jobs:
       - name: Get Binaries
         shell: bash
         run: |
-          wget https://pragma-engine.com/share/binaries_windows64.zip
-          wget https://pragma-engine.com/share/binaries_linux64.tar.gz
+          wget https://pragma-engine.com/share/github/binaries_windows64.zip
+          wget https://pragma-engine.com/share/github/binaries_linux64.tar.gz
 
       - name: Update Nightly Tag
         uses: rickstaa/action-create-tag@v1.3.9
