@@ -4,6 +4,10 @@ on:
   push:
   workflow_dispatch:
 
+permissions:
+  contents: read
+  pull-requests: write
+
 jobs:
   call-workflow:
     uses: Silverlan/pragma/.github/workflows/build-module.yml@main
