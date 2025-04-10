@@ -9,11 +9,11 @@ jobs:
     uses: Silverlan/pragma/.github/workflows/build-module.yml@main
     if: github.repository != 'Silverlan/pr_module_template'
     with:
-      repository: '${{ github.repository }}'
+      repository: 'Silverlan/pr_source'
       os: linux
       build-args: '--module pr_mount_external --access-token-fgd=BUILD_TOKEN1'
     secrets:
-      repository_token: ${{ secrets.GITHUB_TOKEN }}
+      repository_token: ${{ secrets.REPO_ACCESS_TOKEN }}
       build_token1: ${{ secrets.UTIL_FGD_TOKEN }}
     permissions:
       contents: write
